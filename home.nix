@@ -98,6 +98,18 @@
   #
   home.sessionVariables = {
     # EDITOR = "nvim";
+    # FIXED: Enhanced Wayland support for Chromium/Electron applications
+    NIXOS_OZONE_WL = "1";
+    ELECTRON_OZONE_PLATFORM_HINT = "wayland";
+    GDK_BACKEND = "wayland,x11";
+    QT_QPA_PLATFORM = "wayland;xcb";
+    SDL_VIDEODRIVER = "wayland";
+    CLUTTER_BACKEND = "wayland";
+    MOZ_ENABLE_WAYLAND = "1";
+    # Additional environment variables for better compatibility
+    XDG_SESSION_TYPE = "wayland";
+    XDG_CURRENT_DESKTOP = "Hyprland";
+    XDG_SESSION_DESKTOP = "Hyprland";
   };
 
   # Let Home Manager install and manage itself.
@@ -134,6 +146,37 @@ services = {
 
 programs.gpg.enable = true;
 
+# FIXED: Enhanced Chromium/Electron configuration
+programs.chromium = {
+  enable = true;
+  package = pkgs.brave;
+  commandLineArgs = [
+    "--enable-wayland-ime"
+    "--ozone-platform=wayland"
+    "--enable-features=UseOzonePlatform"
+    "--disable-gpu-sandbox"
+    "--enable-unsafe-webgpu"
+    "--enable-gpu-rasterization"
+    "--enable-zero-copy"
+    "--disable-dev-shm-usage"
+    "--no-sandbox"
+    "--disable-setuid-sandbox"
+  ];
+};
+
+# FIXED: Cursor editor configuration
+programs.vscode = {
+  enable = true;
+  package = pkgs.code-cursor;
+  extensions = with pkgs.vscode-extensions; [
+    # Add any extensions you want here
+  ];
+  userSettings = {
+    "window.titleBarStyle" = "custom";
+    "window.useNativeTitleBar" = false;
+  };
+};
+
 # Enable Hyprland
   programs.kitty.enable = true; # required for the default Hyprland config
   wayland.windowManager.hyprland = {
@@ -151,6 +194,9 @@ programs.gpg.enable = true;
         "hyprpaper"
         "wl-paste --type text --watch cliphist store"
         "wl-paste --type image --watch cliphist store"
+        # FIXED: Start desktop portal for better app compatibility
+        "systemctl --user start xdg-desktop-portal-hyprland"
+        "systemctl --user start xdg-desktop-portal-gtk"
       ];
       
       input = {
@@ -264,6 +310,9 @@ programs.gpg.enable = true;
         "$mainMod SHIFT, Q, killactive,"
         "$mainMod, F, fullscreen, 1"
         "$mainMod SHIFT, F, fullscreen, 0"
+        # FIXED: Add keybindings for Brave and Cursor
+        "$mainMod, B, exec, brave --enable-wayland-ime --ozone-platform=wayland --enable-features=UseOzonePlatform"
+        "$mainMod, D, exec, cursor --enable-wayland-ime --ozone-platform=wayland --enable-features=UseOzonePlatform"
       ];
       
       bindm = [
@@ -272,9 +321,6 @@ programs.gpg.enable = true;
       ];
     };
   };
-
-  # Enable Chromium Electron based apps to use Wayland
-  home.sessionVariables.NIXOS_OZONE_WL = "1";
 
   # For Hyprland Waybar
   nixpkgs.overlays = [

@@ -175,13 +175,12 @@
 #    proggyfonts
   ];
 
+  # GPG Configuration for pinentry
+  services.pcscd.enable = true;
+  programs.gnupg.agent = {
+    enable = true;
+    pinentryFlavor = "curses";
+    enableSSHSupport = true;
+  };
 }
 
-
-# GPG Configuration for pinentry
-services.pcscd.enable = true;
-programs.gnupg.agent = {
-  enable = true;
-  pinentryFlavor = "curses";
-  enableSSHSupport = true;
-};

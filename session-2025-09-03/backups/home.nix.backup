@@ -28,7 +28,6 @@
     pkgs.docker
     pkgs.emacs
     pkgs.git
-    pkgs.gammastep
     pkgs.gnupg
     pkgs.kakoune
     pkgs.meson
@@ -99,21 +98,6 @@
   #
   home.sessionVariables = {
     # EDITOR = "nvim";
-    # FIXED: Enhanced Wayland support for Chromium/Electron applications
-    NIXOS_OZONE_WL = "1";
-    ELECTRON_OZONE_PLATFORM_HINT = "wayland";
-    GDK_BACKEND = "wayland,x11";
-    QT_QPA_PLATFORM = "wayland;xcb";
-    SDL_VIDEODRIVER = "wayland";
-    CLUTTER_BACKEND = "wayland";
-    MOZ_ENABLE_WAYLAND = "1";
-    # Additional environment variables for better compatibility
-    XDG_SESSION_TYPE = "wayland";
-    XDG_CURRENT_DESKTOP = "Hyprland";
-    XDG_SESSION_DESKTOP = "Hyprland";
-    # Keyring environment variables
-    GNOME_KEYRING_CONTROL = "$XDG_RUNTIME_DIR/keyring";
-    SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/keyring/ssh";
   };
 
   # Let Home Manager install and manage itself.
@@ -141,62 +125,14 @@
 # gnupg
 services = {
     gnome-keyring.enable = true;
-        components = [ "pkcs11" "secrets" "ssh" ];
     gpg-agent = {
         enable = true;
         defaultCacheTtl = 1800;
         enableSshSupport = true;
     };
-    gammastep = {
-        enable = true;
-        provider = "manual";
-        latitude = 37.7749;  # San Francisco coordinates - adjust for your location
-        longitude = -122.4194;
-        temperature = {
-            day = 5500;
-            night = 2700;
-        };
-        settings = {
-            general = {
-                adjustment-method = "wayland";
-                fade = "1";
-            };
-        };
-    };
 };
 
 programs.gpg.enable = true;
-
-# FIXED: Enhanced Chromium/Electron configuration
-programs.chromium = {
-  enable = true;
-  package = pkgs.brave;
-  commandLineArgs = [
-    "--enable-wayland-ime"
-    "--ozone-platform=wayland"
-    "--enable-features=UseOzonePlatform"
-    "--disable-gpu-sandbox"
-    "--enable-unsafe-webgpu"
-    "--enable-gpu-rasterization"
-    "--enable-zero-copy"
-    "--disable-dev-shm-usage"
-    "--no-sandbox"
-    "--disable-setuid-sandbox"
-  ];
-};
-
-# FIXED: Cursor editor configuration
-programs.vscode = {
-  enable = true;
-  package = pkgs.code-cursor;
-  extensions = with pkgs.vscode-extensions; [
-    # Add any extensions you want here
-  ];
-  userSettings = {
-    "window.titleBarStyle" = "custom";
-    "window.useNativeTitleBar" = false;
-  };
-};
 
 # Enable Hyprland
   programs.kitty.enable = true; # required for the default Hyprland config
@@ -215,9 +151,6 @@ programs.vscode = {
         "hyprpaper"
         "wl-paste --type text --watch cliphist store"
         "wl-paste --type image --watch cliphist store"
-        # FIXED: Start desktop portal for better app compatibility
-        "systemctl --user start xdg-desktop-portal-hyprland"
-        "systemctl --user start xdg-desktop-portal-gtk"
       ];
       
       input = {
@@ -246,12 +179,10 @@ programs.vscode = {
           size = 3;
           passes = 1;
         };
-        shadow = {
-          enabled = true;
-          range = 4;
-          color = "rgba(1a1a1aee)";
-        };
-      };
+        drop_shadow = "yes";
+        shadow_range = 4;
+        shadow_render_power = 3;
+        "col.shadow" = "rgba(1a1a1aee)";
       };
       
       animations = {
@@ -272,7 +203,7 @@ programs.vscode = {
       };
       
       master = {
-        new_status = "master";
+        new_is_master = true;
       };
       
       gestures = {
@@ -333,9 +264,6 @@ programs.vscode = {
         "$mainMod SHIFT, Q, killactive,"
         "$mainMod, F, fullscreen, 1"
         "$mainMod SHIFT, F, fullscreen, 0"
-        # FIXED: Add keybindings for Brave and Cursor
-        "$mainMod, B, exec, brave --enable-wayland-ime --ozone-platform=wayland --enable-features=UseOzonePlatform"
-        "$mainMod, D, exec, cursor --enable-wayland-ime --ozone-platform=wayland --enable-features=UseOzonePlatform"
       ];
       
       bindm = [
@@ -344,6 +272,9 @@ programs.vscode = {
       ];
     };
   };
+
+  # Enable Chromium Electron based apps to use Wayland
+  home.sessionVariables.NIXOS_OZONE_WL = "1";
 
   # For Hyprland Waybar
   nixpkgs.overlays = [

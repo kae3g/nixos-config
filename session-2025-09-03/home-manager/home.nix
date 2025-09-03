@@ -28,7 +28,6 @@
     pkgs.docker
     pkgs.emacs
     pkgs.git
-    pkgs.gammastep
     pkgs.gnupg
     pkgs.kakoune
     pkgs.meson
@@ -69,6 +68,11 @@
     pkgs.wf-recorder
     pkgs.cliphist    # ADDED: for clipboard management
     pkgs.nautilus    # ADDED: alternative file manager
+    pkgs.speedtest-cli    # ADDED: for internet speed testing
+    pkgs.wl-gammactl    # ADDED: for Wayland blue light filter
+    pkgs.redshift    # ADDED: alternative blue light filter
+    pkgs.wl-gammarelay-rs    # ADDED: proper Wayland gamma control
+    pkgs.hyprshade    # ADDED: Hyprland blue light filter shader
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -99,28 +103,21 @@
   #
   home.sessionVariables = {
     # EDITOR = "nvim";
-    # FIXED: Enhanced Wayland support for Chromium/Electron applications
-    NIXOS_OZONE_WL = "1";
-    ELECTRON_OZONE_PLATFORM_HINT = "wayland";
-    GDK_BACKEND = "wayland,x11";
-    QT_QPA_PLATFORM = "wayland;xcb";
-    SDL_VIDEODRIVER = "wayland";
-    CLUTTER_BACKEND = "wayland";
-    MOZ_ENABLE_WAYLAND = "1";
-    # Additional environment variables for better compatibility
-    XDG_SESSION_TYPE = "wayland";
-    XDG_CURRENT_DESKTOP = "Hyprland";
-    XDG_SESSION_DESKTOP = "Hyprland";
-    # Keyring environment variables
-    GNOME_KEYRING_CONTROL = "$XDG_RUNTIME_DIR/keyring";
-    SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/keyring/ssh";
   };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
   # Let Home Manager manage shell configuration
-  programs.bash.enable = true;
+  programs.bash = {
+    enable = true;
+    initExtra = ''
+      # Auto-apply blue light filter when opening new terminal
+      if [ -n "$WAYLAND_DISPLAY" ] && command -v hyprshade >/dev/null 2>&1; then
+        hyprshade on blue-light-filter 2>/dev/null || true
+      fi
+    '';
+  };
   programs.zsh.enable = true;
 
   # Disable Home Manager unstable nixpkgs warning
@@ -141,62 +138,15 @@
 # gnupg
 services = {
     gnome-keyring.enable = true;
-        components = [ "pkcs11" "secrets" "ssh" ];
     gpg-agent = {
         enable = true;
         defaultCacheTtl = 1800;
         enableSshSupport = true;
     };
-    gammastep = {
-        enable = true;
-        provider = "manual";
-        latitude = 37.7749;  # San Francisco coordinates - adjust for your location
-        longitude = -122.4194;
-        temperature = {
-            day = 5500;
-            night = 2700;
-        };
-        settings = {
-            general = {
-                adjustment-method = "wayland";
-                fade = "1";
-            };
-        };
-    };
 };
 
 programs.gpg.enable = true;
 
-# FIXED: Enhanced Chromium/Electron configuration
-programs.chromium = {
-  enable = true;
-  package = pkgs.brave;
-  commandLineArgs = [
-    "--enable-wayland-ime"
-    "--ozone-platform=wayland"
-    "--enable-features=UseOzonePlatform"
-    "--disable-gpu-sandbox"
-    "--enable-unsafe-webgpu"
-    "--enable-gpu-rasterization"
-    "--enable-zero-copy"
-    "--disable-dev-shm-usage"
-    "--no-sandbox"
-    "--disable-setuid-sandbox"
-  ];
-};
-
-# FIXED: Cursor editor configuration
-programs.vscode = {
-  enable = true;
-  package = pkgs.code-cursor;
-  extensions = with pkgs.vscode-extensions; [
-    # Add any extensions you want here
-  ];
-  userSettings = {
-    "window.titleBarStyle" = "custom";
-    "window.useNativeTitleBar" = false;
-  };
-};
 
 # Enable Hyprland
   programs.kitty.enable = true; # required for the default Hyprland config
@@ -215,9 +165,7 @@ programs.vscode = {
         "hyprpaper"
         "wl-paste --type text --watch cliphist store"
         "wl-paste --type image --watch cliphist store"
-        # FIXED: Start desktop portal for better app compatibility
-        "systemctl --user start xdg-desktop-portal-hyprland"
-        "systemctl --user start xdg-desktop-portal-gtk"
+        "sleep 2 && hyprshade on blue-light-filter"
       ];
       
       input = {
@@ -246,12 +194,6 @@ programs.vscode = {
           size = 3;
           passes = 1;
         };
-        shadow = {
-          enabled = true;
-          range = 4;
-          color = "rgba(1a1a1aee)";
-        };
-      };
       };
       
       animations = {
@@ -271,9 +213,6 @@ programs.vscode = {
         preserve_split = "yes";
       };
       
-      master = {
-        new_status = "master";
-      };
       
       gestures = {
         workspace_swipe = "off";
@@ -333,9 +272,9 @@ programs.vscode = {
         "$mainMod SHIFT, Q, killactive,"
         "$mainMod, F, fullscreen, 1"
         "$mainMod SHIFT, F, fullscreen, 0"
-        # FIXED: Add keybindings for Brave and Cursor
-        "$mainMod, B, exec, brave --enable-wayland-ime --ozone-platform=wayland --enable-features=UseOzonePlatform"
-        "$mainMod, D, exec, cursor --enable-wayland-ime --ozone-platform=wayland --enable-features=UseOzonePlatform"
+        # Blue light filter keybindings
+        "$mainMod, B, exec, hyprshade on blue-light-filter"
+        "$mainMod SHIFT, B, exec, hyprshade off"
       ];
       
       bindm = [
@@ -344,6 +283,9 @@ programs.vscode = {
       ];
     };
   };
+
+  # Enable Chromium Electron based apps to use Wayland
+  home.sessionVariables.NIXOS_OZONE_WL = "1";
 
   # For Hyprland Waybar
   nixpkgs.overlays = [
@@ -354,3 +296,6 @@ programs.vscode = {
     })
   ];
 }
+
+# Auto-apply blue light filter in new terminals
+

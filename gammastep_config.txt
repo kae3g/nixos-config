@@ -1,1 +1,0 @@
-    pkgs.gammastep    # ADDED: blue light filter for reduced eye strain

@@ -28,7 +28,6 @@
     pkgs.docker
     pkgs.emacs
     pkgs.git
-    pkgs.gammastep
     pkgs.gnupg
     pkgs.kakoune
     pkgs.meson
@@ -111,9 +110,6 @@
     XDG_SESSION_TYPE = "wayland";
     XDG_CURRENT_DESKTOP = "Hyprland";
     XDG_SESSION_DESKTOP = "Hyprland";
-    # Keyring environment variables
-    GNOME_KEYRING_CONTROL = "$XDG_RUNTIME_DIR/keyring";
-    SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/keyring/ssh";
   };
 
   # Let Home Manager install and manage itself.
@@ -141,27 +137,10 @@
 # gnupg
 services = {
     gnome-keyring.enable = true;
-        components = [ "pkcs11" "secrets" "ssh" ];
     gpg-agent = {
         enable = true;
         defaultCacheTtl = 1800;
         enableSshSupport = true;
-    };
-    gammastep = {
-        enable = true;
-        provider = "manual";
-        latitude = 37.7749;  # San Francisco coordinates - adjust for your location
-        longitude = -122.4194;
-        temperature = {
-            day = 5500;
-            night = 2700;
-        };
-        settings = {
-            general = {
-                adjustment-method = "wayland";
-                fade = "1";
-            };
-        };
     };
 };
 
@@ -195,6 +174,21 @@ programs.vscode = {
   userSettings = {
     "window.titleBarStyle" = "custom";
     "window.useNativeTitleBar" = false;
+    
+    # Terminal environment variables for GPG support
+    "terminal.integrated.env.linux" = {
+      "GPG_TTY" = "$(tty)";
+      "GNOME_KEYRING_CONTROL" = "$XDG_RUNTIME_DIR/keyring";
+      "SSH_AUTH_SOCK" = "$XDG_RUNTIME_DIR/keyring/ssh";
+    };
+    
+    # Git configuration for Cursor
+    "git.enableCommitSigning" = true;
+    "git.gpgPath" = "gpg";
+    
+    # Terminal settings
+    "terminal.integrated.shell.linux" = "/home/xx/.nix-profile/bin/zsh";
+    "terminal.integrated.inheritEnv" = true;
   };
 };
 
@@ -246,12 +240,10 @@ programs.vscode = {
           size = 3;
           passes = 1;
         };
-        shadow = {
-          enabled = true;
-          range = 4;
-          color = "rgba(1a1a1aee)";
-        };
-      };
+        drop_shadow = "yes";
+        shadow_range = 4;
+        shadow_render_power = 3;
+        "col.shadow" = "rgba(1a1a1aee)";
       };
       
       animations = {
@@ -272,7 +264,7 @@ programs.vscode = {
       };
       
       master = {
-        new_status = "master";
+        new_is_master = true;
       };
       
       gestures = {

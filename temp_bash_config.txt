@@ -1,0 +1,10 @@
+  programs.bash = {
+    enable = true;
+    shellAliases = {
+      speedtest = "speedtest --secure";
+    };
+    initExtra = ''
+      export GPG_TTY=$(tty)
+      export PINENTRY_USER_DATA="USE_CURSES=1"
+    '';
+  };

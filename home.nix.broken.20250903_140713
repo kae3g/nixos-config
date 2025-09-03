@@ -6,36 +6,45 @@
   home.homeDirectory = "/home/xx";
   home.stateVersion = "25.05";
 
-  # Allow unfree packages
+  # Nixpkgs configuration
   nixpkgs.config.allowUnfree = true;
-
-  # Disable Home Manager unstable nixpkgs warning
   home.enableNixpkgsReleaseCheck = false;
 
-  # Packages
+  # Essential packages
   home.packages = with pkgs; [
     # Development tools
     git
+    nodejs
+    python3
+    docker
+    docker-compose
+
+    # Editors
     neovim
     emacs
     kakoune
-    vim
-    zed-editor
-    code-cursor
-    docker
-    meson
-    python3
-    uv
-    nodejs_24
-    nodePackages.pnpm
-    nodePackages.yarn
-    nushell
-    zsh
-    tmux
-    zellij
-    screen
+
+    # Terminals
+    kitty
+    oterm
+
+    # Browsers
+    # brave (handled by programs.chromium)
+
+    # Communication
+    discord
+    signal-desktop
+
+    # Media
+    spotify
 
     # System utilities
+    waybar
+    rofi-wayland
+    grim
+    slurp
+    hyprsunset
+    speedtest-cli
     gnupg
     pinentry
     networkmanagerapplet
@@ -43,47 +52,28 @@
     wayland-utils
     wl-clipboard
     wlroots
-    xdg-desktop-portal-gtk
-    xdg-desktop-portal-hyprland
-    xwayland
+    zellij
+    screen
 
-    # Hyprland ecosystem
-    waybar
-    hyprpaper
-    rofi-wayland
-    grim
-    slurp
-    wf-recorder
-    cliphist
-    hyprsunset
-    swww
-
-    # Applications
-    brave
-    discord
-    signal-desktop
-    spotify
-    bluebubbles
-    ollama
-    open-webui
-    oterm
+    # File management
     nautilus
-    speedtest-cli
+    unzip
+    zip
+    tree
+    fd
+    ripgrep
+    bat
+    eza
   ];
 
   # Environment variables
   home.sessionVariables = {
-    # Wayland support
+    # Wayland optimization
     NIXOS_OZONE_WL = "1";
-    ELECTRON_OZONE_PLATFORM_HINT = "wayland";
-    GDK_BACKEND = "wayland,x11";
-    QT_QPA_PLATFORM = "wayland;xcb";
-    SDL_VIDEODRIVER = "wayland";
-    CLUTTER_BACKEND = "wayland";
     MOZ_ENABLE_WAYLAND = "1";
-    XDG_SESSION_TYPE = "wayland";
     XDG_CURRENT_DESKTOP = "Hyprland";
     XDG_SESSION_DESKTOP = "Hyprland";
+    XDG_SESSION_TYPE = "wayland";
   };
 
   # Shell configurations
@@ -92,6 +82,10 @@
     shellAliases = {
       speedtest = "speedtest --secure";
     };
+    initExtra = ''
+      export GPG_TTY=$(tty)
+      export PINENTRY_USER_DATA="USE_CURSES=1"
+    '';
   };
 
   programs.zsh = {
@@ -99,22 +93,34 @@
     shellAliases = {
       speedtest = "speedtest --secure";
     };
+    initExtra = ''
+      export GPG_TTY=$(tty)
+      export PINENTRY_USER_DATA="USE_CURSES=1"
+    '';
   };
 
   # Git configuration
   programs.git = {
     enable = true;
     userName = "kae3g";
-    userEmail = "kj3x39@gmail.com";
+    userEmail = "kae3g@users.noreply.github.com";
     extraConfig = {
+      init.defaultBranch = "main";
+      pull.rebase = false;
       commit.gpgsign = true;
       tag.gpgSign = true;
+      gpg.format = "ssh";
       user.signingkey = "374AC48A537583C9";
     };
   };
 
   # GPG configuration
-  programs.gpg.enable = true;
+  programs.gpg = {
+    enable = true;
+    settings = {
+      pinentry-program = "pinentry-curses";
+    };
+  };
 
   # Services
   services = {
@@ -122,6 +128,7 @@
     gpg-agent = {
       enable = true;
       defaultCacheTtl = 1800;
+      maxCacheTtl = 7200;
       enableSshSupport = true;
     };
   };
@@ -129,43 +136,31 @@
   # Chromium/Brave configuration
   programs.chromium = {
     enable = true;
-    commandLineArgs = [
-      "--enable-wayland-ime"
-      "--ozone-platform=wayland"
-      "--enable-features=UseOzonePlatform"
-      "--disable-gpu-sandbox"
-      "--enable-unsafe-webgpu"
-      "--enable-gpu-rasterization"
-      "--enable-zero-copy"
-      "--disable-dev-shm-usage"
-      "--no-sandbox"
-      "--disable-setuid-sandbox"
+    package = pkgs.brave;
+    extensions = [
+      # Add any extensions you want here
     ];
   };
 
-  # VS Code/Cursor configuration
+  # VSCode/Cursor configuration
   programs.vscode = {
-    enable = true;
     package = pkgs.code-cursor;
     profiles.default = {
       extensions = with pkgs.vscode-extensions; [
-        # Add extensions here
+        # Add any extensions you want here
       ];
       userSettings = {
         "window.titleBarStyle" = "custom";
         "window.useNativeTitleBar" = false;
-        
         # Terminal environment variables for GPG support
         "terminal.integrated.env.linux" = {
           "GPG_TTY" = "$(tty)";
           "GNOME_KEYRING_CONTROL" = "$XDG_RUNTIME_DIR/keyring";
           "SSH_AUTH_SOCK" = "$XDG_RUNTIME_DIR/keyring/ssh";
         };
-        
-        # Git configuration
+        # Git configuration for Cursor
         "git.enableCommitSigning" = true;
         "git.gpgPath" = "gpg";
-        
         # Terminal settings
         "terminal.integrated.shell.linux" = "/home/xx/.nix-profile/bin/zsh";
         "terminal.integrated.inheritEnv" = true;
@@ -173,41 +168,39 @@
     };
   };
 
+  # Kitty terminal configuration
+  programs.kitty = {
+    enable = true;
+    settings = {
+      font_family = "JetBrains Mono";
+      font_size = 12;
+      background_opacity = "0.9";
+    };
+  };
+
   # Hyprland configuration
-  programs.kitty.enable = true;
-  
   wayland.windowManager.hyprland = {
     enable = true;
     package = pkgs.hyprland;
-    xwayland.enable = true;
-    systemd.enable = true;
-    
     settings = {
       # Monitor configuration
       monitor = ",preferred,auto,1";
-      
-      # Startup programs
-      exec-once = [
-        "waybar"
-        "hyprpaper"
-        "wl-paste --type text --watch cliphist store"
-        "wl-paste --type image --watch cliphist store"
-        "systemctl --user start xdg-desktop-portal-hyprland"
-        "systemctl --user start xdg-desktop-portal-gtk"
-        "hyprsunset"
-      ];
-      
+
       # Input configuration
       input = {
         kb_layout = "us";
+        kb_variant = "";
+        kb_model = "";
+        kb_options = "";
+        kb_rules = "";
         follow_mouse = 1;
         touchpad = {
-          natural_scroll = "yes";
+          natural_scroll = "no";
         };
         sensitivity = 0;
       };
-      
-      # General appearance
+
+      # General settings
       general = {
         gaps_in = 5;
         gaps_out = 20;
@@ -217,8 +210,8 @@
         layout = "dwindle";
         allow_tearing = false;
       };
-      
-      # Decoration
+
+      # Decoration settings
       decoration = {
         rounding = 10;
         blur = {
@@ -227,8 +220,8 @@
           passes = 1;
         };
       };
-      
-      # Animations
+
+      # Animation settings
       animations = {
         enabled = "yes";
         bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
@@ -236,51 +229,69 @@
           "windows, 1, 7, myBezier"
           "windowsOut, 1, 7, default, popin 80%"
           "border, 1, 10, default"
+          "borderangle, 1, 8, default"
           "fade, 1, 7, default"
           "workspaces, 1, 6, default"
         ];
       };
-      
-      # Layout configurations
+
+      # Dwindle layout
       dwindle = {
         pseudotile = "yes";
         preserve_split = "yes";
       };
-      
+
+      # Master layout
+      master = {
+      };
+
+      # Gestures
       gestures = {
         workspace_swipe = "off";
       };
-      
-      misc = {
-        force_default_wallpaper = -1;
+
+      # Device configuration
+      device = {
+        name = "epic-mouse-v1";
+        sensitivity = -0.5;
       };
-      
+
+      # Window rules
+      # Window rules
+      # Window rules
+      # Window rules
+      windowrule = [
+        "float, class:^(pavucontrol)$"
+        "float, class:^(blueman-manager)$"
+        "float, class:^(nm-connection-editor)$"
+        "float, class:^(chromium)$"
+        "float, class:^(thunar)$"
+        "float, class:^(code-cursor)$"
+        "float, class:^(org.kde.polkit-kde-authentication-agent-1)$"
+      ];
+
+
       # Keybindings
       "$mainMod" = "SUPER";
-      
       bind = [
-        # Basic navigation
+        # Essential applications
         "$mainMod, Return, exec, kitty"
         "$mainMod, Q, exec, kitty"
-        "$mainMod, C, killactive,"
-        "$mainMod, M, exit,"
+        "$mainMod, B, exec, brave"
+        "$mainMod, D, exec, code-cursor"
         "$mainMod, E, exec, nautilus"
-        "$mainMod, V, togglefloating,"
-        "$mainMod, R, exec, rofi -show drun"
-        "$mainMod, P, pseudo,"
-        "$mainMod, J, togglesplit,"
-        
-        # Window focus
-        "$mainMod, left, movefocus, l"
-        "$mainMod, right, movefocus, r"
-        "$mainMod, up, movefocus, u"
-        "$mainMod, down, movefocus, d"
-        "$mainMod, H, movefocus, l"
-        "$mainMod, L, movefocus, r"
-        "$mainMod, K, movefocus, u"
-        "$mainMod, J, movefocus, d"
-        
-        # Workspace switching
+        "$mainMod, R, exec, rofi-wayland --show drun"
+
+        # Window management
+        "$mainMod, C, killactive"
+        "$mainMod, SHIFT, Q, killactive"
+        "$mainMod, V, togglefloating"
+        "$mainMod, P, pseudo"
+        "$mainMod, J, togglesplit"
+        "$mainMod, F, fullscreen, 1"
+        "$mainMod, SHIFT, F, fullscreen, 0"
+
+        # Workspace navigation
         "$mainMod, 1, workspace, 1"
         "$mainMod, 2, workspace, 2"
         "$mainMod, 3, workspace, 3"
@@ -291,44 +302,53 @@
         "$mainMod, 8, workspace, 8"
         "$mainMod, 9, workspace, 9"
         "$mainMod, 0, workspace, 10"
-        
-        # Move windows to workspaces
-        "$mainMod SHIFT, 1, movetoworkspace, 1"
-        "$mainMod SHIFT, 2, movetoworkspace, 2"
-        "$mainMod SHIFT, 3, movetoworkspace, 3"
-        "$mainMod SHIFT, 4, movetoworkspace, 4"
-        "$mainMod SHIFT, 5, movetoworkspace, 5"
-        "$mainMod SHIFT, 6, movetoworkspace, 6"
-        "$mainMod SHIFT, 7, movetoworkspace, 7"
-        "$mainMod SHIFT, 8, movetoworkspace, 8"
-        "$mainMod SHIFT, 9, movetoworkspace, 9"
-        "$mainMod SHIFT, 0, movetoworkspace, 10"
-        
-        # Mouse workspace switching
-        "$mainMod, mouse_down, workspace, e+1"
-        "$mainMod, mouse_up, workspace, e-1"
-        
+
+        # Move window to workspace
+        "$mainMod, SHIFT, 1, movetoworkspace, 1"
+        "$mainMod, SHIFT, 2, movetoworkspace, 2"
+        "$mainMod, SHIFT, 3, movetoworkspace, 3"
+        "$mainMod, SHIFT, 4, movetoworkspace, 4"
+        "$mainMod, SHIFT, 5, movetoworkspace, 5"
+        "$mainMod, SHIFT, 6, movetoworkspace, 6"
+        "$mainMod, SHIFT, 7, movetoworkspace, 7"
+        "$mainMod, SHIFT, 8, movetoworkspace, 8"
+        "$mainMod, SHIFT, 9, movetoworkspace, 9"
+        "$mainMod, SHIFT, 0, movetoworkspace, 10"
+
+        # Window focus (arrow keys)
+        "$mainMod, left, movefocus, l"
+        "$mainMod, right, movefocus, r"
+        "$mainMod, up, movefocus, u"
+        "$mainMod, down, movefocus, d"
+
+        # Window focus (vim-style)
+        "$mainMod, h, movefocus, l"
+        "$mainMod, l, movefocus, r"
+        "$mainMod, k, movefocus, u"
+        "$mainMod, j, movefocus, d"
+
         # Screenshots
         "$mainMod, S, exec, grim -g \"$(slurp)\" - | wl-copy"
         "$mainMod SHIFT, S, exec, grim - | wl-copy"
-        
-        # Additional keybindings
-        "$mainMod SHIFT, Q, killactive,"
-        "$mainMod, F, fullscreen, 1"
-        "$mainMod SHIFT, F, fullscreen, 0"
-        
-        # Application launchers
-        "$mainMod, B, exec, brave --enable-wayland-ime --ozone-platform=wayland --enable-features=UseOzonePlatform"
-        "$mainMod, D, exec, cursor --enable-wayland-ime --ozone-platform=wayland --enable-features=UseOzonePlatform"
-        
+
         # Blue light filter toggle
-        "$mainMod SHIFT, B, exec, $HOME/nixos-config-backup/scripts/hyprsunset-toggle.sh"
+        "$mainMod, SHIFT, B, exec, $HOME/nixos-config-backup/scripts/hyprsunset-toggle.sh"
+
+        # Emergency controls
+        "$mainMod, M, exit"
       ];
-      
+
       # Mouse bindings
       bindm = [
         "$mainMod, mouse:272, movewindow"
         "$mainMod, mouse:273, resizewindow"
+      ];
+
+      # Startup applications
+      exec-once = [
+        "waybar"
+        "hyprpaper"
+        "hyprsunset"
       ];
     };
   };
@@ -336,8 +356,8 @@
   # Hyprland wallpaper configuration
   home.file = {
     ".config/hypr/hyprpaper.conf".text = ''
-      preload = /home/xx/Pictures/wallpaper.jpg
-      wallpaper = ,/home/xx/Pictures/wallpaper.jpg
+      preload = "/home/xx/Pictures/wallpaper.jpg"
+      wallpaper = ,"/home/xx/Pictures/wallpaper.jpg"
     '';
   };
 

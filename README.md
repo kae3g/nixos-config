@@ -2,6 +2,8 @@
 
 This repository contains a complete NixOS configuration with Hyprland window manager, optimized for productivity and eye comfort.
 
+> **⚠️ Important Note for Users**: If you're using this repository as a reference for your own personal NixOS configuration, you may need to manually update or ask your Cursor editor to change the Git configuration and `~ /home/user` directory references to match your own personal information and system setup.
+
 ## 🚀 Quick Start
 
 1. Copy `configuration.nix` to `/etc/nixos/`
@@ -17,37 +19,36 @@ This repository contains a complete NixOS configuration with Hyprland window man
 - `home.nix.original` - Original Home Manager configuration (backup)
 - `wallpaper.jpg` - Default wallpaper for Hyprland
 - `scripts/` - Utility scripts for backup and restore
+- `scripts/hyprsunset-toggle.sh` - Blue light filter toggle script
 
-## 🎨 Blue Light Filtering with Hyprshade
+## 🎨 Blue Light Filtering with Hyprsunset
 
-This configuration uses **Hyprshade** for blue light filtering and eye comfort:
+This configuration uses **Hyprsunset** (the official Hyprland utility) for blue light filtering and eye comfort:
 
 ### Installation
-```bash
-# Hyprshade is not included in the config - install manually if needed
-nix-env -iA nixpkgs.hyprshade
-```
+Hyprsunset is automatically included in the Home Manager configuration via `pkgs.hyprsunset`.
 
 ### Usage
 ```bash
-# Enable blue light filter (night mode)
-hyprshade on blue-light-filter
+# Enable blue light filter (3000K temperature)
+hyprctl hyprsunset temperature 3000
 
-# Disable blue light filter
-hyprshade off
+# Disable blue light filter (reset to normal)
+hyprctl hyprsunset identity
 
-# List available shaders
-hyprshade list
+# Check current status
+hyprctl hyprsunset status
 
-# Set custom temperature (2000K-6500K)
-hyprshade on blue-light-filter:2000
+# Toggle using our custom script
+$HOME/nixos-config-backup/scripts/hyprsunset-toggle.sh
 ```
 
-### Recommended Shaders
-- `blue-light-filter` - Standard blue light reduction
-- `blue-light-filter:2000` - Very warm (night time)
-- `blue-light-filter:3000` - Warm (evening)
-- `blue-light-filter:4000` - Moderate (day time)
+### Keybinding
+- **Super + Shift + B** - Toggle blue light filter on/off
+
+### Recommended Settings
+- **3000K** - Warm evening light (recommended for blue light filtering)
+- **Identity** - Normal color temperature (disable filter)
 
 ## 🆘 Emergency Hyprland Controls
 
@@ -120,6 +121,11 @@ systemctl restart display-manager
 | **Super + S** | Take screenshot (selected area) |
 | **Super + Shift + S** | Take full screenshot |
 
+### Blue Light Filter
+| Key Combination | Action |
+|----------------|--------|
+| **Super + Shift + B** | Toggle Hyprsunset blue light filter |
+
 ### Mouse Controls
 | Key Combination | Action |
 |----------------|--------|
@@ -143,6 +149,8 @@ systemctl restart display-manager
 - **Brave browser** with Wayland optimization
 - **Complete Hyprland** setup with waybar
 - **Essential packages** for development and productivity
+- **Hyprsunset** for blue light filtering
+- **Speedtest-cli** with secure connection alias
 
 ### Environment Variables
 - **Wayland optimization** for Electron apps
@@ -156,6 +164,7 @@ systemctl restart display-manager
 **Keybindings not working:**
 ```bash
 home-manager switch
+hyprctl reload
 ```
 
 **Applications not starting:**
@@ -179,6 +188,18 @@ systemctl --user start xdg-desktop-portal-hyprland
 # Check environment variables
 echo $WAYLAND_DISPLAY
 echo $XDG_SESSION_TYPE
+```
+
+**Blue light filter not working:**
+```bash
+# Check if hyprsunset is running
+pgrep hyprsunset
+
+# Start hyprsunset if needed
+hyprsunset &
+
+# Test the toggle script
+$HOME/nixos-config-backup/scripts/hyprsunset-toggle.sh
 ```
 
 ### Recovery Instructions
@@ -205,7 +226,8 @@ echo $XDG_SESSION_TYPE
 - **Browsers**: brave
 - **Communication**: discord, signal-desktop
 - **Media**: spotify
-- **System**: waybar, rofi-wayland, grim, slurp
+- **System**: waybar, rofi-wayland, grim, slurp, hyprsunset
+- **Network**: speedtest-cli
 
 ### Adding New Packages
 Edit `home.nix` and add to `home.packages`:
@@ -234,6 +256,8 @@ home-manager switch
 - GPG signing works in both terminal and Cursor editor
 - SSH authentication is configured for GitHub
 - Repository is kept clean with no obsolete files
+- Blue light filtering uses Hyprsunset (official Hyprland utility)
+- Speedtest automatically uses secure HTTPS connections
 
 ## 🤝 Contributing
 
@@ -300,7 +324,7 @@ This is a personal configuration repository. Feel free to use it as a reference 
 ### Blue Light Filter
 | Key Combination | Action |
 |----------------|--------|
-| **Super + N** | Toggle Hyprshade blue light filter |
+| **Super + Shift + B** | Toggle Hyprsunset blue light filter |
 
 ### Emergency Controls
 | Key Combination | Action |
@@ -317,5 +341,5 @@ This is a personal configuration repository. Feel free to use it as a reference 
 
 ### Available Unused Keys
 The following keys are currently unused and available for future keybindings:
-- **Super + A, G, I, O, T, U, W, X, Y, Z**
+- **Super + A, G, I, N, O, T, U, W, X, Y, Z**
 

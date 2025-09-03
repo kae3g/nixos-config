@@ -111,6 +111,9 @@
     XDG_SESSION_TYPE = "wayland";
     XDG_CURRENT_DESKTOP = "Hyprland";
     XDG_SESSION_DESKTOP = "Hyprland";
+    # Keyring environment variables
+    GNOME_KEYRING_CONTROL = "$XDG_RUNTIME_DIR/keyring";
+    SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/keyring/ssh";
   };
 
   # Let Home Manager install and manage itself.
@@ -138,6 +141,7 @@
 # gnupg
 services = {
     gnome-keyring.enable = true;
+        components = [ "pkcs11" "secrets" "ssh" ];
     gpg-agent = {
         enable = true;
         defaultCacheTtl = 1800;

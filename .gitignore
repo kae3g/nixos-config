@@ -1,0 +1,11 @@
+# Ignore backup files
+*.backup.*
+*.original
+
+# Ignore temporary files
+*.tmp
+*.swp
+*~
+
+# Ignore system-specific files
+hardware-configuration.nix

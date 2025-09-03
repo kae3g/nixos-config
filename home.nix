@@ -28,6 +28,7 @@
     pkgs.docker
     pkgs.emacs
     pkgs.git
+    pkgs.gammastep
     pkgs.gnupg
     pkgs.kakoune
     pkgs.meson
@@ -141,6 +142,22 @@ services = {
         enable = true;
         defaultCacheTtl = 1800;
         enableSshSupport = true;
+    };
+    gammastep = {
+        enable = true;
+        provider = "manual";
+        latitude = 37.7749;  # San Francisco coordinates - adjust for your location
+        longitude = -122.4194;
+        temperature = {
+            day = 5500;
+            night = 2700;
+        };
+        settings = {
+            general = {
+                adjustment-method = "wayland";
+                fade = "1";
+            };
+        };
     };
 };
 

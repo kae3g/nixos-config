@@ -67,7 +67,6 @@
     pkgs.slurp
     pkgs.wf-recorder
     pkgs.cliphist    # ADDED: for clipboard management
-    pkgs.dolphin     # ADDED: file manager
     pkgs.nautilus    # ADDED: alternative file manager
   ];
 
@@ -224,7 +223,7 @@ programs.gpg.enable = true;
         "$mainMod, Q, exec, kitty"          # Keep Q as alternative
         "$mainMod, C, killactive,"
         "$mainMod, M, exit,"
-        "$mainMod, E, exec, dolphin"
+        "$mainMod, E, exec, nautilus"
         "$mainMod, V, togglefloating,"
         "$mainMod, R, exec, rofi -show drun"
         "$mainMod, P, pseudo,"

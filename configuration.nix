@@ -149,16 +149,16 @@
     xwayland.enable = true;
   };
 
-  # ADDED: Auto-login configuration to automatically start Hyprland
+  # FIXED: Auto-login configuration to automatically start Hyprland
   services.greetd = {
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd Hyprland";
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd ${pkgs.hyprland}/bin/Hyprland";
         user = "greeter";
       };
       initial_session = {
-        command = "Hyprland";
+        command = "${pkgs.hyprland}/bin/Hyprland";
         user = "xx";
       };
     };

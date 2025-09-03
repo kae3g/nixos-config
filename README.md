@@ -1,64 +1,8 @@
-# NixOS Hyprland Configuration Backup
+# NixOS Hyprland Configuration
 
-This repository contains the configuration files for setting up Hyprland on NixOS with Home Manager.
+This repository contains a complete NixOS configuration with Hyprland window manager, optimized for productivity and eye comfort.
 
-## Files Included
-
-- `configuration.nix` - Main NixOS system configuration
-- `home.nix` - Home Manager configuration with Hyprland setup
-- `home.nix.original` - Original Home Manager configuration (backup)
-- `wallpaper.jpg` - Default wallpaper for Hyprland
-
-## Key Changes Made
-
-### NixOS Configuration (`/etc/nixos/configuration.nix`)
-- Disabled X11 server (`services.xserver.enable = false`)
-- Enabled Hyprland (`programs.hyprland.enable = true`)
-- Added XWayland support
-- Configured xdg-desktop-portal for screen sharing
-- Added essential fonts (nerd-fonts.droid-sans-mono)
-- Enabled Polkit for Hyprland
-- Disabled GNOME (commented out)
-
-### Home Manager Configuration (`~/.config/home-manager/home.nix`)
-- Added `nixpkgs.config.allowUnfree = true` for Cursor editor
-- Added essential Hyprland packages:
-  - waybar (status bar)
-  - hyprpaper (wallpaper manager)
-  - rofi-wayland (application launcher)
-  - grim, slurp (screenshot tools)
-  - wf-recorder (screen recording)
-- Configured Hyprland with complete keybindings:
-  - Super+Q: Open Kitty terminal
-  - Super+C: Close active window
-  - Super+M: Exit Hyprland
-  - Super+R: Open Rofi launcher
-  - Super+1-0: Switch workspaces
-  - Super+Shift+1-0: Move window to workspace
-  - Super+S: Take screenshot
-  - Arrow keys: Move focus between windows
-- Added wallpaper configuration
-- Enabled Wayland environment variables for Electron apps
-
-## Hyprland Keybindings
-
-| Key Combination | Action |
-|----------------|--------|
-| Super+Q | Open Kitty terminal |
-| Super+C | Close active window |
-| Super+M | Exit Hyprland |
-| Super+E | Open file manager (dolphin) |
-| Super+V | Toggle floating window |
-| Super+R | Open Rofi application launcher |
-| Super+P | Toggle pseudo-tiling |
-| Super+J | Toggle split direction |
-| Super+Arrow Keys | Move focus between windows |
-| Super+1-0 | Switch to workspace 1-10 |
-| Super+Shift+1-0 | Move window to workspace 1-10 |
-| Super+S | Take screenshot (selected area) |
-| Super+Shift+S | Take full screenshot |
-
-## Installation Steps
+## 🚀 Quick Start
 
 1. Copy `configuration.nix` to `/etc/nixos/`
 2. Copy `home.nix` to `~/.config/home-manager/`
@@ -66,29 +10,237 @@ This repository contains the configuration files for setting up Hyprland on NixO
 4. Run `home-manager switch`
 5. Reboot and select Hyprland from the login screen
 
-## Recovery Instructions
+## 📁 Repository Structure
 
-If Hyprland doesn't work and you need to revert:
+- `configuration.nix` - Main NixOS system configuration
+- `home.nix` - Home Manager configuration with Hyprland setup
+- `home.nix.original` - Original Home Manager configuration (backup)
+- `wallpaper.jpg` - Default wallpaper for Hyprland
+- `scripts/` - Utility scripts for backup and restore
 
-1. Boot from a previous NixOS generation (select at boot menu)
-2. Copy the original `home.nix.original` back to `~/.config/home-manager/home.nix`
-3. Run `home-manager switch` to revert Home Manager changes
+## 🎨 Blue Light Filtering with Hyprshade
+
+This configuration uses **Hyprshade** for blue light filtering and eye comfort:
+
+### Installation
+```bash
+# Hyprshade is not included in the config - install manually if needed
+nix-env -iA nixpkgs.hyprshade
+```
+
+### Usage
+```bash
+# Enable blue light filter (night mode)
+hyprshade on blue-light-filter
+
+# Disable blue light filter
+hyprshade off
+
+# List available shaders
+hyprshade list
+
+# Set custom temperature (2000K-6500K)
+hyprshade on blue-light-filter:2000
+```
+
+### Recommended Shaders
+- `blue-light-filter` - Standard blue light reduction
+- `blue-light-filter:2000` - Very warm (night time)
+- `blue-light-filter:3000` - Warm (evening)
+- `blue-light-filter:4000` - Moderate (day time)
+
+## 🆘 Emergency Hyprland Controls
+
+### Session Management
+| Key Combination | Action | Use Case |
+|----------------|--------|----------|
+| **Super + M** | Exit Hyprland | Complete session logout |
+| **Super + Shift + Q** | Kill active window | Force close unresponsive app |
+| **Super + C** | Kill active window | Alternative window killer |
+
+### System Recovery
+| Key Combination | Action | Use Case |
+|----------------|--------|----------|
+| **Ctrl + Alt + F2** | Switch to TTY | When Hyprland is completely frozen |
+| **Ctrl + Alt + F1** | Return to Hyprland | After TTY recovery |
+
+### TTY Recovery Commands
+If Hyprland becomes unresponsive:
+```bash
+# Switch to TTY (Ctrl + Alt + F2)
+# Kill Hyprland process
+pkill Hyprland
+
+# Restart Hyprland
+Hyprland
+
+# Or restart the entire session
+systemctl restart display-manager
+```
+
+## ⌨️ Complete Keybindings Reference
+
+### Essential Navigation
+| Key Combination | Action |
+|----------------|--------|
+| **Super + Return** | Open Kitty terminal |
+| **Super + Q** | Open Kitty terminal (alternative) |
+| **Super + R** | Open Rofi application launcher |
+| **Super + E** | Open file manager (Nautilus) |
+| **Super + B** | Open Brave browser |
+| **Super + D** | Open Cursor editor |
+
+### Window Management
+| Key Combination | Action |
+|----------------|--------|
+| **Super + C** | Close active window |
+| **Super + Shift + Q** | Kill active window (force close) |
+| **Super + V** | Toggle floating window |
+| **Super + P** | Toggle pseudo-tiling |
+| **Super + J** | Toggle split direction |
+| **Super + F** | Toggle fullscreen |
+| **Super + Shift + F** | Exit fullscreen |
+
+### Workspace Navigation
+| Key Combination | Action |
+|----------------|--------|
+| **Super + 1-0** | Switch to workspace 1-10 |
+| **Super + Shift + 1-0** | Move window to workspace 1-10 |
+| **Super + Mouse Wheel** | Switch workspaces |
+
+### Window Focus
+| Key Combination | Action |
+|----------------|--------|
+| **Super + Arrow Keys** | Move focus between windows |
+| **Super + H/J/K/L** | Move focus (vim-style) |
+
+### Screenshots
+| Key Combination | Action |
+|----------------|--------|
+| **Super + S** | Take screenshot (selected area) |
+| **Super + Shift + S** | Take full screenshot |
+
+### Mouse Controls
+| Key Combination | Action |
+|----------------|--------|
+| **Super + Left Mouse** | Move window |
+| **Super + Right Mouse** | Resize window |
+
+## 🔧 Configuration Features
+
+### System Configuration
+- **Wayland-only** (X11 disabled for better performance)
+- **AMD GPU** support with amdgpu driver
+- **PipeWire** audio system
+- **NetworkManager** for networking
+- **Docker** virtualization support
+- **Auto-upgrades** enabled
+
+### Home Manager Features
+- **GPG signing** configured for git commits
+- **SSH key management** with gnome-keyring
+- **Cursor editor** with Wayland support
+- **Brave browser** with Wayland optimization
+- **Complete Hyprland** setup with waybar
+- **Essential packages** for development and productivity
+
+### Environment Variables
+- **Wayland optimization** for Electron apps
+- **Ozone platform** hints for better compatibility
+- **XDG desktop** environment variables
+
+## 🛠️ Troubleshooting
+
+### Common Issues
+
+**Keybindings not working:**
+```bash
+home-manager switch
+```
+
+**Applications not starting:**
+```bash
+# Check if packages are installed
+nix-env -q
+
+# Rebuild if needed
+nixos-rebuild switch
+```
+
+**Screen sharing not working:**
+```bash
+# Check xdg-desktop-portal
+systemctl --user status xdg-desktop-portal-hyprland
+systemctl --user start xdg-desktop-portal-hyprland
+```
+
+**Wayland issues:**
+```bash
+# Check environment variables
+echo $WAYLAND_DISPLAY
+echo $XDG_SESSION_TYPE
+```
+
+### Recovery Instructions
+
+**If Hyprland doesn't work:**
+1. Boot from previous NixOS generation (select at boot menu)
+2. Copy `home.nix.original` back to `~/.config/home-manager/home.nix`
+3. Run `home-manager switch` to revert
 4. Edit `/etc/nixos/configuration.nix` to re-enable GNOME if needed
 5. Run `sudo nixos-rebuild switch`
 
-## Troubleshooting
+**If system is completely broken:**
+1. Boot from USB/NixOS installer
+2. Mount your system
+3. Restore from git repository
+4. Rebuild configuration
 
-- If keybindings don't work, check that Home Manager was applied: `home-manager switch`
-- If applications don't start, verify packages are installed: `nix-env -q`
-- If screen sharing doesn't work, check xdg-desktop-portal is running
-- For Wayland issues, check environment variables: `echo $WAYLAND_DISPLAY`
+## 📦 Package Management
 
-## Session Progress
+### Essential Packages Included
+- **Development**: git, nodejs, python3, docker
+- **Editors**: cursor, neovim, emacs, kakoune
+- **Terminals**: kitty, oterm
+- **Browsers**: brave
+- **Communication**: discord, signal-desktop
+- **Media**: spotify
+- **System**: waybar, rofi-wayland, grim, slurp
 
-This configuration was created during a troubleshooting session where:
-1. Initial Hyprland setup had missing keybindings
-2. Home Manager configuration was incomplete
-3. Essential packages were missing
-4. Unfree package policy needed adjustment
+### Adding New Packages
+Edit `home.nix` and add to `home.packages`:
+```nix
+home.packages = [
+  pkgs.your-package-name
+];
+```
 
-All issues have been resolved in this configuration.
+Then run:
+```bash
+home-manager switch
+```
+
+## 🔐 Security Features
+
+- **GPG commit signing** enabled
+- **SSH key management** with gnome-keyring
+- **Firewall** configurable
+- **Polkit** for privilege escalation
+
+## 📝 Notes
+
+- This configuration was created and tested on NixOS 25.05
+- All configurations are declarative and reproducible
+- GPG signing works in both terminal and Cursor editor
+- SSH authentication is configured for GitHub
+- Repository is kept clean with no obsolete files
+
+## 🤝 Contributing
+
+This is a personal configuration repository. Feel free to use it as a reference for your own NixOS setup.
+
+---
+
+**Last Updated**: September 2025  
+**NixOS Version**: 25.05  
+**Home Manager**: Compatible with current release

@@ -244,3 +244,78 @@ This is a personal configuration repository. Feel free to use it as a reference 
 **Last Updated**: September 2025  
 **NixOS Version**: 25.05  
 **Home Manager**: Compatible with current release
+
+## 📋 Complete Keybindings Reference
+
+### Essential Applications
+| Key Combination | Action |
+|----------------|--------|
+| **Super + Return** | Open Kitty terminal |
+| **Super + Q** | Open Kitty terminal (alternative) |
+| **Super + B** | Open Brave browser |
+| **Super + D** | Open Cursor editor |
+| **Super + E** | Open file manager (Nautilus) |
+| **Super + R** | Open Rofi application launcher |
+
+### Window Management
+| Key Combination | Action |
+|----------------|--------|
+| **Super + C** | Close active window |
+| **Super + Shift + Q** | Kill active window (force close) |
+| **Super + V** | Toggle floating window |
+| **Super + P** | Toggle pseudo-tiling |
+| **Super + J** | Toggle split direction |
+| **Super + F** | Toggle fullscreen |
+| **Super + Shift + F** | Exit fullscreen |
+
+### Workspace Navigation
+| Key Combination | Action |
+|----------------|--------|
+| **Super + 1-0** | Switch to workspace 1-10 |
+| **Super + Shift + 1-0** | Move window to workspace 1-10 |
+| **Super + Mouse Wheel** | Switch workspaces |
+
+### Window Focus (Arrow Keys)
+| Key Combination | Action |
+|----------------|--------|
+| **Super + Left** | Move focus left |
+| **Super + Right** | Move focus right |
+| **Super + Up** | Move focus up |
+| **Super + Down** | Move focus down |
+
+### Window Focus (Vim-style)
+| Key Combination | Action |
+|----------------|--------|
+| **Super + H** | Move focus left |
+| **Super + L** | Move focus right |
+| **Super + K** | Move focus up |
+| **Super + J** | Move focus down |
+
+### Screenshots
+| Key Combination | Action |
+|----------------|--------|
+| **Super + S** | Take screenshot (selected area) |
+| **Super + Shift + S** | Take full screenshot |
+
+### Blue Light Filter
+| Key Combination | Action |
+|----------------|--------|
+| **Super + N** | Toggle Hyprshade blue light filter |
+
+### Emergency Controls
+| Key Combination | Action |
+|----------------|--------|
+| **Super + M** | Exit Hyprland (logout) |
+| **Ctrl + Alt + F2** | Switch to TTY (when frozen) |
+| **Ctrl + Alt + F1** | Return to Hyprland |
+
+### Mouse Controls
+| Key Combination | Action |
+|----------------|--------|
+| **Super + Left Mouse** | Move window |
+| **Super + Right Mouse** | Resize window |
+
+### Available Unused Keys
+The following keys are currently unused and available for future keybindings:
+- **Super + A, G, I, O, T, U, W, X, Y, Z**
+

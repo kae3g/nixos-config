@@ -328,6 +328,8 @@ programs.vscode = {
         # FIXED: Add keybindings for Brave and Cursor
         "$mainMod, B, exec, brave --enable-wayland-ime --ozone-platform=wayland --enable-features=UseOzonePlatform"
         "$mainMod, D, exec, cursor --enable-wayland-ime --ozone-platform=wayland --enable-features=UseOzonePlatform"
+        # Hyprshade blue light filter toggle
+        "$mainMod, N, exec, hyprshade toggle blue-light-filter"
       ];
       
       bindm = [

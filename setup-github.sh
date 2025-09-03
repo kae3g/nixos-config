@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Setup GitHub repository for configuration sync
 # Run this script to push your configuration to GitHub

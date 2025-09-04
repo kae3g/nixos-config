@@ -109,7 +109,7 @@
     extraConfig = {
       commit.gpgsign = true;
       tag.gpgSign = true;
-      user.signingkey = "374AC48A537583C9";
+      user.signingkey = "801E24E10E8FA29C";
     };
   };
 
@@ -123,6 +123,7 @@
       enable = true;
       defaultCacheTtl = 1800;
       enableSshSupport = true;
+      pinentry.package = pkgs.pinentry-gtk2;
     };
   };
 

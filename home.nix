@@ -160,11 +160,24 @@
           "GPG_TTY" = "$(tty)";
           "GNOME_KEYRING_CONTROL" = "$XDG_RUNTIME_DIR/keyring";
           "SSH_AUTH_SOCK" = "$XDG_RUNTIME_DIR/keyring/ssh";
+          # Additional GPG environment variables
+          "GPG_AGENT_INFO" = "$XDG_RUNTIME_DIR/gnupg/S.gpg-agent";
         };
         
-        # Git configuration
+        # Git configuration for GPG signing
         "git.enableCommitSigning" = true;
         "git.gpgPath" = "gpg";
+        "git.signingKey" = "801E24E10E8FA29C";  # Your main GPG key ID
+        "git.autoStash" = true;
+        "git.confirmSync" = false;
+        
+        # Cursor-specific Git settings
+        "git.useCommitInputAsStashMessage" = true;
+        "git.showProgress" = "always";
+        "git.allowNoVerifyCommit" = false;
+        "git.allowCommitSigning" = true;
+        "git.autoFetch" = true;
+        "git.autofetch" = true;
         
         # Terminal settings
         "terminal.integrated.shell.linux" = "/home/xx/.nix-profile/bin/zsh";

@@ -277,7 +277,7 @@
         "$mainMod, Return, exec, kitty"
         "$mainMod, Q, exec, kitty"
         "$mainMod, C, killactive,"
-        "$mainMod, M, exit,"
+        "$mainMod SHIFT CTRL, M, exit,"
         "$mainMod, E, exec, nautilus"
         "$mainMod, V, togglefloating,"
         "$mainMod, R, exec, rofi -show drun"

@@ -6,6 +6,15 @@ This repository contains a complete NixOS configuration with Hyprland window man
 
 ## 🚀 Quick Start
 
+## 📋 Current Setup
+
+This repository uses a symlink setup for streamlined configuration management:
+- `home.nix` is the single source of truth
+- `~/.config/home-manager/home.nix` is symlinked to this repository
+- Changes to `home.nix` are immediately reflected in the active configuration
+
+
+
 1. Copy `configuration.nix` to `/etc/nixos/`
 2. Copy `home.nix` to `~/.config/home-manager/`
 3. Run `sudo nixos-rebuild switch`
@@ -16,7 +25,7 @@ This repository contains a complete NixOS configuration with Hyprland window man
 
 - `configuration.nix` - Main NixOS system configuration
 - `home.nix` - Home Manager configuration with Hyprland setup
-- `home.nix.original` - Original Home Manager configuration (backup)
+- `home.nix.original` - Original Home Manager configuration (backup, no longer used)
 - `wallpaper.jpg` - Default wallpaper for Hyprland
 - `scripts/` - Utility scripts for backup and restore
 - `scripts/hyprsunset-toggle.sh` - Blue light filter toggle script
@@ -55,7 +64,7 @@ $HOME/nixos-config-backup/scripts/hyprsunset-toggle.sh
 ### Session Management
 | Key Combination | Action | Use Case |
 |----------------|--------|----------|
-| **Super + M** | Exit Hyprland | Complete session logout |
+| **Super + Shift + Ctrl + M** | Exit Hyprland | Complete session logout (requires restart) |
 | **Super + Shift + Q** | Kill active window | Force close unresponsive app |
 | **Super + C** | Kill active window | Alternative window killer |
 
@@ -206,7 +215,7 @@ $HOME/nixos-config-backup/scripts/hyprsunset-toggle.sh
 
 **If Hyprland doesn't work:**
 1. Boot from previous NixOS generation (select at boot menu)
-2. Copy `home.nix.original` back to `~/.config/home-manager/home.nix`
+2. Copy `home.nix.original` back to `~/.config/home-manager/home.nix` (if needed for restoration)
 3. Run `home-manager switch` to revert
 4. Edit `/etc/nixos/configuration.nix` to re-enable GNOME if needed
 5. Run `sudo nixos-rebuild switch`
@@ -329,7 +338,7 @@ This is a personal configuration repository. Feel free to use it as a reference 
 ### Emergency Controls
 | Key Combination | Action |
 |----------------|--------|
-| **Super + M** | Exit Hyprland (logout) |
+| **Super + Shift + Ctrl + M** | Exit Hyprland (logout, requires restart) |
 | **Ctrl + Alt + F2** | Switch to TTY (when frozen) |
 | **Ctrl + Alt + F1** | Return to Hyprland |
 

@@ -188,7 +188,18 @@
   };
 
   # Hyprland configuration
-  programs.kitty.enable = true;
+  programs.kitty = {
+    enable = true;
+    settings = {
+      shell = "/home/xx/.nix-profile/bin/zsh";
+      wayland_enable = true;
+      startup_session = "none";
+      close_on_child_death = "no";
+      allow_remote_control = "no";
+      enable_audio_bell = false;
+      confirm_os_window_close = 0;
+    };
+  };
   
   wayland.windowManager.hyprland = {
     enable = true;
@@ -274,8 +285,8 @@
       
       bind = [
         # Basic navigation
-        "$mainMod, Return, exec, kitty"
-        "$mainMod, Q, exec, kitty"
+        "$mainMod, Return, exec, /run/current-system/sw/bin/kitty"
+        "$mainMod, Q, exec, /run/current-system/sw/bin/kitty"
         "$mainMod, C, killactive,"
         "$mainMod SHIFT CTRL, M, exit,"
         "$mainMod, E, exec, nautilus"
